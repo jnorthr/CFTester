@@ -1,0 +1,67 @@
+// earlier version of build but failed so see README for ideas also buildcf.gradle
+import org.apache.ivy.plugins.resolver.URLResolver
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'cloudfoundry'
+
+def compatibilityVersion = 1.5
+sourceCompatibility = compatibilityVersion
+targetCompatibility = compatibilityVersion
+webAppDirName = file('war')
+
+buildscript {
+       repositories {
+         mavenCentral()
+         mavenRepo url:'http://repo.springframework.org/milestone/'
+       }
+       dependencies {
+           classpath group: 'org.gradle.api.plugins', name: 'gradle-cf-plugin', version: '0.2.0'
+       }
+   }
+
+cloudfoundry {
+  username = ''
+  password = ''
+  application = 'caelyftemplate2'
+  target='https://api.run.pivotal.io' // cloud foundry V2 target for pivotal
+  framework = 'standalone'
+  applicationFramework='standalone'
+  runtime = 'java'
+  file = new File(webAppDirName)
+  uris = ['http://caelyftemplate2.cfapps.io/']
+}
+
+repositories {
+  mavenCentral()
+  mavenRepo url:'http://repo.springframework.org/milestone/'
+}
+
+
+sourceSets {
+    main {
+        groovy {
+            srcDir 'src/main'
+        }
+        output.classesDir file('war/WEB-INF/classes')
+    }
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.1.5'
+  compile 'org.cloudfoundry:cloudfoundry-client-lib:0.8.4'
+    test 'org.cloudfoundry:cloudfoundry-client-lib:0.8.4'
+    testCompile 'javax.servlet:servlet-api:2.5'
+    testCompile 'org.cloudfoundry:cloudfoundry-client-lib:0.8.4'
+}
+
+
+clean {
+     delete sourceSets*.output.classesDir
+}
+
+
+
+task wrapper(type: Wrapper) {
+    gradleVersion '1.7'
+}

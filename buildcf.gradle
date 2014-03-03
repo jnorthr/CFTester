@@ -1,0 +1,90 @@
+//import org.apache.ivy.plugins.resolver.URLResolver
+// just trying to get correct repo address to resolve this dependency->'http://repo.springsource.org/milestone' - that worked...
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'maven'  // Maven plugin to install artifact in local Maven repo.- but didnt work - missing bits??
+
+// put this in to test the cloud foundry plugin for gradle
+apply plugin: 'cloudfoundry'
+
+def compatibilityVersion = 1.5
+sourceCompatibility = compatibilityVersion
+targetCompatibility = compatibilityVersion
+
+ext{
+   webAppDir = file('war')
+} // end of proj extensions
+
+
+buildscript {
+       repositories {
+         	mavenCentral()
+
+         	// may need this cos of cloudfoundry-client-lib:0.8.4 or gradle plugin, can't remember which
+	 	mavenRepo url :'http://repo.springsource.org/milestone' 
+       }
+
+       dependencies {
+           classpath group: 'org.gradle.api.plugins', name: 'gradle-cf-plugin', version: '0.2.0'
+       }
+   }
+
+
+// following parms feed the gradle plugin - the same parms feed the java sample code 
+// from http://docs.cloudfoundry.com/docs/using/managing-apps/libs/java-client.html 
+// which runs fine with the same credentials
+
+// this plugin reports bad target address - so maybe issue w/ CF 0.2.0
+cloudfoundry {
+  username = ''
+  password = 'xxx'
+  application = 'caelyf'
+  target = 'https://api.run.pivotal.io'   //'https://api.run.cfapps.io'
+  uris = ['http://caelyf.cfapps.io/']
+} // end of Cf parms
+
+
+
+// puts compiled .jar into ~/.m2 maven local
+install.dependsOn ':build'
+
+// this was an attempt to put resulting .jar file into the local maven repo
+def localMavenRepo = 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
+repositories {
+    // Use local Maven repo location. We don't need this if we only want to install
+    // an artifact, but we do need it if we want to use dependencies from the local
+    // repository.
+    // see: http://mrhaki.blogspot.fr/2009/11/gradle-goodness-use-our-local-maven.html
+
+    mavenCentral()
+    mavenRepo url: localMavenRepo
+    mavenRepo url :'http://repo.springsource.org/milestone'
+}
+
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:1.8.6'
+    compile 'org.cloudfoundry:cloudfoundry-client-lib:0.8.6'
+
+    testCompile 'javax.servlet:servlet-api:2.5'
+    testCompile 'org.cloudfoundry:cloudfoundry-client-lib:0.8.6'
+}
+
+
+sourceSets {
+    main {
+        groovy {
+            srcDir 'src/groovy'
+        }
+        java {
+            srcDir 'src/java'
+        }
+        output.classesDir file('war/WEB-INF/classes')
+    }
+}
+
+clean {
+     delete sourceSets*.output.classesDir
+}
+

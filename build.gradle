@@ -1,0 +1,92 @@
+import org.apache.ivy.plugins.resolver.URLResolver
+// trying to get cloudfoundry plugin to work - did not so see README.txt and buildcf.gradle for working samples
+apply plugin: 'groovy'
+apply plugin: 'war'
+apply plugin: 'application'
+apply plugin: 'cloudfoundry'
+
+def compatibilityVersion = 1.6
+sourceCompatibility = compatibilityVersion
+targetCompatibility = compatibilityVersion
+defaultTasks 'clean', 'build','war', 'copyWar' 
+
+warName = file("${buildDir}/libs/CFTester.war")
+war.duplicatesStrategy = "EXCLUDE"
+
+buildscript {
+  repositories {
+    mavenCentral()
+    maven { url "https://oss.sonatype.org/content/repositories/springsource-milestones" }
+  }
+  dependencies {
+    classpath group: 'org.cloudfoundry', name: 'cf-gradle-plugin', version: '1.0.1'
+  }
+}
+
+cloudfoundry {
+  application = 'cftester'
+  target='https://api.run.pivotal.io' // cloud foundry V2 target for pivotal
+  file = warName
+  uris = ['http://cftester.cfapps.io/']
+  organization="fairchild"
+  space="development"
+  serviceInfos {
+        "rediscloud-mu014" {
+            label = 'rediscloud'
+            provider = 'Garantiadata'
+            version = 'n/a'
+            plan = '25mb'
+            bind = true
+        }
+  }
+
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    main {
+        groovy {
+            srcDir 'src/groovy'
+        }
+        java {
+            srcDir 'src/java'
+        }
+        output.classesDir file('war/WEB-INF/classes')
+    }
+}
+
+clean {
+     delete sourceSets*.output.classesDir
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.2.1'
+    testCompile 'javax.servlet:servlet-api:2.5'
+    compile 'org.cloudfoundry:cloudfoundry-client-lib:1.0.2'
+}
+
+
+task copyRuntimeLibraries(type: Sync){
+    def webAppLibDirName = 'war/WEB-INF/lib'
+    description = "Copies runtime libraries from ${configurations.runtime} to $webAppLibDirName."
+    from configurations.runtime  
+    into webAppLibDirName
+} // end of copyRuntimeLibraries
+
+task copyWar(type: Copy) {
+    from 'build/libs'
+    into '../website/war/WEB-INF/lib'
+}
+
+
+
+test {
+        maxParallelForks = Runtime.getRuntime().availableProcessors()
+ }
+
+task wrapper(type: Wrapper) {
+    gradleVersion '1.11'
+}

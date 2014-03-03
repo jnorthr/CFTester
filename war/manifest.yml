@@ -1,0 +1,13 @@
+--- 
+applications: 
+- memory: 256M
+  name: caelyftemplate
+  services: 
+    rediscloud-5e945: 
+      plan: 20mb
+      provider: garantiadata
+      version: n/a
+      label: rediscloud
+  instances: 1
+  path: .
+  url: caelyftemplate.cfapps.io

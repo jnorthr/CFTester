@@ -1,0 +1,10 @@
+// earlier version of build but failed so see README for ideas also buildcf.gradle
+import org.apache.ivy.plugins.resolver.URLResolver
+
+repositories {
+  mavenCentral()
+}
+
+task callCL(type: Exec) {
+    commandLine './hw.sh'
+}
