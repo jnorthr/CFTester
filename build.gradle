@@ -2,15 +2,16 @@ import org.apache.ivy.plugins.resolver.URLResolver
 // trying to get cloudfoundry plugin to work - did not so see README.txt and buildcf.gradle for working samples
 apply plugin: 'groovy'
 apply plugin: 'war'
-apply plugin: 'application'
+apply plugin: 'java'
 apply plugin: 'cloudfoundry'
 
 def compatibilityVersion = 1.6
 sourceCompatibility = compatibilityVersion
 targetCompatibility = compatibilityVersion
-defaultTasks 'clean', 'build','war', 'copyWar' 
-
-warName = file("${buildDir}/libs/CFTester.war")
+defaultTasks 'clean', 'build','war' 
+project.ext{
+	warName = file("${buildDir}/libs/CFTester.war")
+}
 war.duplicatesStrategy = "EXCLUDE"
 
 buildscript {
@@ -46,6 +47,7 @@ repositories {
     mavenCentral()
 }
 
+/* ---
 sourceSets {
     main {
         groovy {
@@ -61,24 +63,13 @@ sourceSets {
 clean {
      delete sourceSets*.output.classesDir
 }
+---
+*/
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.2.1'
+    compile 'org.codehaus.groovy:groovy-all:2.1.5'
     testCompile 'javax.servlet:servlet-api:2.5'
     compile 'org.cloudfoundry:cloudfoundry-client-lib:1.0.2'
-}
-
-
-task copyRuntimeLibraries(type: Sync){
-    def webAppLibDirName = 'war/WEB-INF/lib'
-    description = "Copies runtime libraries from ${configurations.runtime} to $webAppLibDirName."
-    from configurations.runtime  
-    into webAppLibDirName
-} // end of copyRuntimeLibraries
-
-task copyWar(type: Copy) {
-    from 'build/libs'
-    into '../website/war/WEB-INF/lib'
 }
 
 

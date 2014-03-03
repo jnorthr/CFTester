@@ -1,4 +1,4 @@
-get "/", forward: "/WEB-INF/pages/index.gtpl"
+get "/", forward: "/WEB-INF/pages/index.html"
 get "/datetime", forward: "/datetime.groovy", cache: 10.seconds
 get "/sqltest", forward: "/sqltest.groovy", cache: 2.minutes
 get "/gpars", forward: "/gpars.groovy", cache: 30.seconds
