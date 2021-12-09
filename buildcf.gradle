@@ -8,7 +8,7 @@ apply plugin: 'maven'  // Maven plugin to install artifact in local Maven repo.-
 // put this in to test the cloud foundry plugin for gradle
 apply plugin: 'cloudfoundry'
 
-def compatibilityVersion = 1.5
+def compatibilityVersion = 1.8
 sourceCompatibility = compatibilityVersion
 targetCompatibility = compatibilityVersion
 
@@ -20,9 +20,8 @@ ext{
 buildscript {
        repositories {
          	mavenCentral()
-
-         	// may need this cos of cloudfoundry-client-lib:0.8.4 or gradle plugin, can't remember which
-	 	mavenRepo url :'http://repo.springsource.org/milestone' 
+            // may need this cos of cloudfoundry-client-lib:0.8.4 or gradle plugin, can't remember which
+	 	    // mavenRepo url :'http://repo.springsource.org/milestone' 
        }
 
        dependencies {
@@ -64,11 +63,11 @@ repositories {
 
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:1.8.6'
-    compile 'org.cloudfoundry:cloudfoundry-client-lib:0.8.6'
+    implementation 'org.codehaus.groovy:groovy-all:3.0.8'
+    implementation 'org.cloudfoundry:cloudfoundry-client-lib:1.1.3'
 
-    testCompile 'javax.servlet:servlet-api:2.5'
-    testCompile 'org.cloudfoundry:cloudfoundry-client-lib:0.8.6'
+    testImplementation 'javax.servlet:servlet-api:2.5'
+    testImplementation 'org.cloudfoundry:cloudfoundry-client-lib:1.1.3'
 }
 
 

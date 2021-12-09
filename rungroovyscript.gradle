@@ -1,5 +1,5 @@
 // earlier version of build to run groovy script in src/main/groovy
-import org.apache.ivy.plugins.resolver.URLResolver
+//import org.apache.ivy.plugins.resolver.URLResolver
 
 apply plugin: 'groovy'
 
@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.0.5'
+    implementation 'org.codehaus.groovy:groovy-all:3.0.8'
 }
 
 // mainClassName needed to run groovy script

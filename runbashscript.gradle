@@ -1,5 +1,5 @@
 // earlier version of build but failed so see README for ideas also buildcf.gradle
-import org.apache.ivy.plugins.resolver.URLResolver
+//import org.apache.ivy.plugins.resolver.URLResolver
 
 repositories {
   mavenCentral()
